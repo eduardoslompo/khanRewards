@@ -1,41 +1,44 @@
 import { Component, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Student } from '../../models/student.model';
 
 @Component({
   selector: 'app-edit-student-dialog',
-  templateUrl: './edit-student-dialog.component.html',
-  styleUrls: ['./edit-student-dialog.component.css']
+  template: `
+    <h2 mat-dialog-title>Editar Estudante</h2>
+    <mat-dialog-content>
+      <mat-form-field>
+        <mat-label>Nome</mat-label>
+        <input matInput [(ngModel)]="data.name">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Estrelas Atuais</mat-label>
+        <input matInput type="number" [(ngModel)]="data.currentStars">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Estrelas Anteriores</mat-label>
+        <input matInput type="number" [(ngModel)]="data.previousStars">
+      </mat-form-field>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+      <button mat-button (click)="onNoClick()">Cancelar</button>
+      <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Salvar</button>
+    </mat-dialog-actions>
+  `,
+  styles: [`
+    mat-form-field {
+      display: block;
+      margin-bottom: 20px;
+    }
+  `]
 })
 export class EditStudentDialogComponent {
-  form: FormGroup;
-
   constructor(
-    private fb: FormBuilder,
     public dialogRef: MatDialogRef<EditStudentDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: Student
-  ) {
-    this.form = this.fb.group({
-      name: [data.name, Validators.required],
-      currentStars: [data.currentStars, [Validators.required, Validators.min(0)]],
-      previousStars: [data.previousStars, [Validators.required, Validators.min(0)]],
-      collectedPrizes: [data.collectedPrizes.join(', '), Validators.required]
-    });
-  }
+  ) {}
 
-  onSubmit(): void {
-    if (this.form.valid) {
-      const updatedStudent: Student = {
-        ...this.data,
-        ...this.form.value,
-        collectedPrizes: this.form.value.collectedPrizes.split(',').map((prize: string) => prize.trim())
-      };
-      this.dialogRef.close(updatedStudent);
-    }
-  }
-
-  onCancel(): void {
+  onNoClick(): void {
     this.dialogRef.close();
   }
 }

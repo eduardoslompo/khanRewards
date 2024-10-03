@@ -18,6 +18,9 @@ export class StudentTableComponent implements OnInit {
 
   ngOnInit(): void {
     this.studentService.getStudents().subscribe(students => {
+      students.forEach(student => {
+        student.starBalance = student.currentStars - student.previousStars;
+      });
       this.dataSource.data = students;
     });
   }
@@ -30,6 +33,7 @@ export class StudentTableComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        result.starBalance = result.currentStars - result.previousStars;
         this.studentService.updateStudent(result);
       }
     });
